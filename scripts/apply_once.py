@@ -10,12 +10,17 @@ from __future__ import annotations
 
 import argparse
 import sys
+import os
 
 # Ensure the project root is on the Python path when executing directly
 from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parents[1]))
+project_root = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(project_root))
 
-from jobagent.agent.controller import apply_to_job
+# Add the project root to PYTHONPATH as well
+os.environ['PYTHONPATH'] = str(project_root) + ':' + os.environ.get('PYTHONPATH', '')
+
+from agent.controller import apply_to_job
 
 
 def main() -> None:
