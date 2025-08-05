@@ -104,8 +104,11 @@ class BrowserDriver:
         # Extract input fields
         inputs = []
         input_elements = self.page.query_selector_all("input, textarea, select")
+        
         for i, element in enumerate(input_elements):
             try:
+                # Get element tag name
+                tag_name = element.evaluate("el => el.tagName.toLowerCase()")
                 input_type = element.get_attribute("type") or "text"
                 label_text = ""
                 
@@ -119,19 +122,23 @@ class BrowserDriver:
                 # If no label found, look for nearby text
                 if not label_text:
                     try:
-                        parent = element.locator("xpath=..")
-                        label_text = parent.inner_text().strip()[:50]  # Limit length
+                        # Look for preceding label
+                        placeholder = element.get_attribute("placeholder")
+                        name_attr = element.get_attribute("name")
+                        label_text = placeholder or name_attr or f"Field {i+1}"
                     except:
-                        label_text = element.get_attribute("placeholder") or ""
+                        label_text = f"Field {i+1}"
                 
-                inputs.append({
+                input_info = {
                     "id": f"input_{i}",
-                    "selector": f"input:nth-of-type({i+1})" if element.tag_name == "input" else f"{element.tag_name}:nth-of-type({i+1})",
+                    "selector": f"input:nth-of-type({i+1})" if tag_name == "input" else f"{tag_name}:nth-of-type({i+1})",
                     "label": label_text,
                     "type": input_type,
                     "element": element  # Store for later use
-                })
-            except:
+                }
+                inputs.append(input_info)
+                
+            except Exception as e:
                 continue
         
         return {
