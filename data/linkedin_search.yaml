@@ -1,4 +1,5 @@
-# Example LinkedIn job search presets
+# LinkedIn job search presets
+# Add multiple search configurations to cover different types of jobs
 
 searches:
   - title: "Software Engineer"
@@ -11,3 +12,36 @@ searches:
     keywords:
       - "python"
       - "backend"
+  
+  - title: "Full Stack Developer"
+    location: "United States"
+    easy_apply_only: true
+    remote_only: true
+    experience_levels:
+      - "Entry level"
+      - "Associate"
+    keywords:
+      - "react"
+      - "javascript"
+      - "python"
+  
+  - title: "Backend Developer"
+    location: "United States"  
+    easy_apply_only: true
+    remote_only: true
+    experience_levels:
+      - "Entry level"
+      - "Associate"
+    keywords:
+      - "python"
+      - "django"
+      - "flask"
+      
+  - title: "Python Developer"
+    location: "United States"
+    easy_apply_only: true
+    remote_only: true
+    experience_levels:
+      - "Entry level"
+      - "Associate"
+      - "Mid-Senior level"

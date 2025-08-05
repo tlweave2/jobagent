@@ -2,3 +2,6 @@ playwright
 PyYAML
 langchain
 openai
+anthropic
+python-dotenv
+requests

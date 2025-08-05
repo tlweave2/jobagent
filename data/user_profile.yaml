@@ -3,7 +3,7 @@
 # Personal details used to pre‑fill forms
 full_name: Timothy Weaver
 email: tlweave2@asu.edu
-phone: "+1-555-123-4567"
+phone: "209-261-5308"
 location: "Phoenix, AZ"
 
 # Work authorisation and sponsorship
@@ -18,6 +18,16 @@ cover_letter_path: "./coverletters/generic_cover.pdf"
 default_answers:
   - question: "Will you require visa sponsorship?"
     answer: "No"
+  - question: "Are you authorized to work in the United States?"
+    answer: "Yes"
+  - question: "What is your expected salary range?"
+    answer: "$80,000 - $120,000"
+  - question: "When can you start?"
+    answer: "Immediately"
+  - question: "Years of software development experience?"
+    answer: "3 years"
+  - question: "Why are you interested in this position?"
+    answer: "I am passionate about software engineering and excited to apply my full-stack development skills, educational background, and diverse professional experience to contribute to innovative projects."
   - question: "Are you authorized to work in the United States?"
     answer: "Yes"
   - question: "How many years of experience do you have with Python?"

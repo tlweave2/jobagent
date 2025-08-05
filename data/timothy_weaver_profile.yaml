@@ -1,0 +1,188 @@
+# Timothy Weaver - Professional Profile for Job Applications
+# Updated: August 5, 2025
+
+# Personal Information
+full_name: "Timothy Weaver"
+first_name: "Timothy"
+last_name: "Weaver"
+email: "tlweave2@asu.edu"
+phone: "209-261-5308"
+location: "Phoenix, AZ"
+website: "www.timothylweaver.com"
+linkedin_url: "linkedin.com/in/timweaversoftware"
+
+# Work Authorization
+visa_status: "Authorized to work in the U.S."
+visa_sponsorship: "No"
+us_citizen: "Yes"
+security_clearance: "None"
+
+# Career Information
+current_role: "Software Engineer / Graduate Student"
+years_experience: "3"
+desired_salary_min: 80000
+desired_salary_max: 120000
+salary_negotiable: true
+available_start_date: "Immediately"
+willing_to_relocate: true
+remote_work_preference: "Hybrid"
+
+# Education
+education:
+  - degree: "Master of Computer Science"
+    school: "Arizona State University"
+    status: "Currently Enrolled"
+    expected_graduation: "Dec 2026"
+    gpa: ""
+  - degree: "Bachelor of Science in Software Engineering"
+    school: "Arizona State University" 
+    graduation_date: "May 2025"
+    gpa: "3.83"
+
+# Technical Skills
+programming_languages:
+  - "Java"
+  - "C++"
+  - "JavaScript"
+  - "Python"
+  - "SQL"
+
+frameworks_technologies:
+  - "Spring Boot"
+  - "React"
+  - "Node.js"
+  - "PostgreSQL"
+  - "MySQL"
+  - "MongoDB"
+  - "Git"
+  - "Docker"
+  - "Linux"
+  - "FFmpeg"
+
+methodologies:
+  - "Agile Development"
+  - "Object-Oriented Design"
+  - "RESTful API Development"
+  - "Full-Stack Development"
+  - "Mobile-First Design"
+
+# File Paths
+resume_path: "./resumes/timothy_weaver_resume.pdf"
+cover_letter_path: "./coverletters/timothy_weaver_cover.pdf"
+portfolio_url: "www.timothylweaver.com"
+
+# Professional Summary
+summary: "Software Engineer with Bachelor of Science in Software Engineering (3.83 GPA) currently pursuing Master of Computer Science at Arizona State University. Successfully developed and deployed full-stack web applications including AI-powered video generation platform. 18+ years of business operations experience with proven leadership, problem-solving, and client relationship skills. US Army veteran."
+
+# Key Projects
+key_projects:
+  - name: "VidlyAi.Com - Video Generation Platform"
+    duration: "Dec 2024 - Present"
+    description: "Designed and developed full-stack AI video generation platform with Spring Boot API, React frontend, and FFmpeg integration"
+    technologies: ["Spring Boot", "React", "PostgreSQL", "FFmpeg"]
+  - name: "Field Day Project - Capstone"
+    duration: "Jun 2024 - Jun 2025"
+    description: "Academic capstone project demonstrating software engineering principles"
+
+# Work Experience Highlights
+work_experience:
+  - title: "Business Owner & Operator"
+    company: "Strokers"
+    duration: "2003 - 2020"
+    description: "Founded and managed successful motorcycle service business, implemented digital systems, managed team"
+  - title: "Clinical Engineer"
+    company: "Stanford University Hospital"
+    duration: "1995 - 2002"
+    description: "Maintained critical medical equipment, served as Department Head, managed budgets and vendor relationships"
+
+# Military Service
+military_service:
+  branch: "United States Army"
+  service_period: "1990 - 1994"
+  location: "Walter Reed Medical Hospital"
+  awards: ["Army Achievement Medal (2x)"]
+  security_clearance: "None"
+
+# Core Competencies
+core_skills:
+  - "Problem Solving"
+  - "Attention to Detail"
+  - "Team Collaboration"
+  - "Leadership"
+  - "Client Relationship Management"
+  - "Full-Stack Development"
+  - "Database Design"
+  - "System Architecture"
+
+# Default Responses for Common Screening Questions
+default_answers:
+  - question: "Are you authorized to work in the United States?"
+    answer: "Yes"
+  - question: "Will you require visa sponsorship?"
+    answer: "No"
+  - question: "Do you have a security clearance?"
+    answer: "No"
+  - question: "What is your expected salary range?"
+    answer: "$80,000 - $120,000 depending on role and benefits"
+  - question: "When can you start?"
+    answer: "Immediately"
+  - question: "Are you willing to relocate?"
+    answer: "Yes"
+  - question: "Do you prefer remote, hybrid, or on-site work?"
+    answer: "I prefer hybrid work arrangements but am flexible based on company needs"
+  - question: "Why are you interested in this position?"
+    answer: "I am passionate about software engineering and excited to apply my full-stack development skills, educational background, and diverse professional experience to contribute to innovative projects and grow as a software engineer."
+  - question: "What makes you a good fit for this role?"
+    answer: "My combination of recent software engineering education (3.83 GPA), hands-on experience with modern technologies like Spring Boot and React, proven leadership abilities from business ownership, and strong problem-solving skills from my military and medical equipment background make me well-suited for software engineering roles."
+  - question: "Do you have experience with [specific technology]?"
+    answer: "I have experience with Java, JavaScript, Python, Spring Boot, React, and modern database technologies. I'm also a quick learner and eager to expand my technical skills."
+  - question: "Years of experience in software development?"
+    answer: "3 years of focused software development experience, including academic projects and professional development work"
+  - question: "Highest level of education?"
+    answer: "Bachelor of Science in Software Engineering, currently pursuing Master of Computer Science"
+  - question: "Why are you leaving your current position?"
+    answer: "I am actively seeking full-time software engineering opportunities to apply my recent education and technical skills in a professional development environment"
+
+# LinkedIn Job Search Preferences
+job_preferences:
+  job_titles:
+    - "Software Engineer"
+    - "Full Stack Developer"
+    - "Backend Developer"
+    - "Java Developer"
+    - "Software Developer"
+    - "Junior Software Engineer"
+    - "Entry Level Software Engineer"
+  industries:
+    - "Technology"
+    - "Healthcare Technology"
+    - "Financial Services"
+    - "Software Development"
+    - "Artificial Intelligence"
+  company_sizes:
+    - "Startup"
+    - "Mid-size"
+    - "Large Enterprise"
+  work_arrangements:
+    - "Hybrid"
+    - "Remote"
+    - "On-site"
+
+# Interview Availability
+interview_availability:
+  timezone: "MST"
+  preferred_times: ["Morning", "Afternoon"]
+  notice_required: "24 hours"
+  available_days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+
+# References Available Upon Request
+references_available: true
+
+# Additional Notes
+notes: |
+  - Recent software engineering graduate with strong academic performance
+  - Combines technical skills with proven business and leadership experience
+  - Military veteran with strong work ethic and discipline
+  - Experienced in full-stack development with modern technologies
+  - Actively pursuing advanced degree while seeking professional opportunities
+  - Strong problem-solving abilities demonstrated across multiple industries

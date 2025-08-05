@@ -1,71 +1,338 @@
-# Job Application Automation Agent
+# LinkedIn Job Auto-Applier
 
-This repository contains a starter scaffold for building an autonomous agent that can search for jobs, navigate to job listings on LinkedIn (or other platforms), and automatically apply using "Easy Apply" style forms. The design is intentionally modular so you can swap out components, add more capabilities or integrate with other systems over time.
+An AI-powered automation system for applying to LinkedIn jobs using Easy Apply. This system combines computer vision, natural language processing, and browser automation to intelligently fill out job application forms.
 
-## Overview
+## 🌟 Features
 
-The high‑level flow of this system is:
+- **GUI Frontend**: User-friendly Tkinter interface for managing job searches
+- **Dual AI Models**: 
+  - Local LLM (Ollama qwen2.5vl:7b) with vision capabilities
+  - Cloud LLM (Anthropic Claude) as backup/alternative
+- **Smart Form Detection**: Analyzes page screenshots and DOM structure
+- **Profile Management**: YAML-based user profile configuration
+- **LinkedIn Integration**: Specialized handling of LinkedIn's Easy Apply system
+- **Real-time Logging**: Live status updates and detailed operation logs
+- **Batch Processing**: Apply to multiple jobs automatically with search filters
 
-1. **Search for jobs.** A script builds a LinkedIn search URL from configurable presets (see `data/linkedin_search.yaml`) and loads the search results in a Playwright browser session.
-2. **Identify Easy Apply jobs.** Job cards are parsed from the search results page and filtered to include only those that support the Easy Apply workflow.
-3. **Open each job.** For each Easy Apply job the browser navigates to the job detail page and clicks the Easy Apply button. A modal form appears on top of the page.
-4. **Interact with the form.** The current page snapshot (HTML, visible text and a list of clickable or fillable elements) is sent to a local language model which returns a list of actions such as filling text fields, uploading a resume or clicking "Next" or "Submit". These actions are executed via Playwright. The process repeats until the form is completed or fails.
-5. **Recovery.** If the UI appears to be stuck (for example the DOM structure doesn’t change for a period of time) the fallback model can be invoked. This secondary model (e.g. Claude or GPT‑4 via API) attempts to recover from modal popups or unexpected states and suggests recovery actions.
-6. **Log and repeat.** After each job is processed, details such as job title, company, status and timestamp are logged to a history file. The agent then proceeds to the next job in the search results.
+## 🏗️ Architecture
 
-The goal of this project is to demonstrate how local and cloud language models can be orchestrated with a browser automation tool to perform multi‑step interactions on dynamic websites.
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   GUI Frontend  │────│   Controller     │────│  Browser Driver │
+│ (Tkinter App)   │    │ (Job Automation) │    │  (Playwright)   │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+         │                       │                       │
+         │              ┌────────┴────────┐              │
+         │              │                 │              │
+         └──────────────▼─────────────────▼──────────────┘
+                   ┌─────────────┐  ┌─────────────┐
+                   │ Local LLM   │  │ Cloud LLM   │
+                   │ (Ollama)    │  │ (Claude)    │
+                   └─────────────┘  └─────────────┘
+```
 
-## Directory Structure
+## 🚀 Quick Start
+
+### 1. Prerequisites
+
+- Python 3.12+
+- Ollama server with qwen2.5vl:7b model
+- Anthropic API key (optional, for cloud LLM)
+
+### 2. Installation
+
+```bash
+# Clone and setup
+cd jobagent
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+# Install Playwright browsers
+playwright install
+```
+
+### 3. Configuration
+
+#### User Profile (`data/user_profile.yaml`)
+```yaml
+full_name: "Your Name"
+email: "your.email@example.com"
+phone: "+1-555-123-4567"
+location: "Your City, State"
+visa_status: "Authorized to work in the U.S."
+resume_path: "./resumes/your_resume.pdf"
+cover_letter_path: "./coverletters/cover_letter.pdf"
+```
+
+#### Environment Variables (`.env`)
+```bash
+# Local LLM Settings
+OLLAMA_HOST=http://localhost:11434
+OLLAMA_MODEL=qwen2.5vl:7b
+
+# Cloud LLM Settings (optional)
+ANTHROPIC_API_KEY=your_claude_api_key_here
+
+# Browser Settings
+HEADLESS_MODE=false
+MIN_DELAY_BETWEEN_APPS=3
+```
+
+### 4. Start Ollama Server
+
+```bash
+# Start Ollama server
+ollama serve
+
+# Pull the vision model (if not already installed)
+ollama pull qwen2.5vl:7b
+```
+
+### 5. Login to LinkedIn
+
+**Important**: You must be logged into LinkedIn for the automation to work.
+
+```bash
+# First-time setup: Login helper
+python linkedin_login.py
+```
+
+This will:
+- Open a browser window
+- Navigate to LinkedIn login
+- Save your session for future automation
+- **Note**: You only need to do this once
+
+### 6. Run the Application
+
+#### GUI Mode (Recommended)
+```bash
+python linkedin_job_app.py
+```
+
+#### Command Line Mode
+```bash
+# Apply to a specific job
+python -c "from agent.controller import apply_to_job; apply_to_job('https://linkedin.com/jobs/view/XXXXXX')"
+```
+
+#### Test System
+```bash
+python test_system.py
+```
+
+## 🎯 Usage Guide
+
+### GUI Application
+
+1. **Configure Profile**: 
+   - Set your profile path (default: `data/user_profile.yaml`)
+   - Choose AI model (Local Ollama or Cloud Claude)
+
+2. **Set Job Search Parameters**:
+   - Keywords: "Software Engineer", "Python Developer", etc.
+   - Location: "San Francisco, CA", "Remote", etc.
+   - Experience Level: Entry, Mid, Senior
+   - Maximum applications to send
+
+3. **Start Automation**:
+   - Click "Start Job Search" 
+   - Monitor real-time logs
+   - Use "Stop" to halt the process
+
+### LinkedIn Search Filters
+
+The system supports LinkedIn's search parameters:
+- **Keywords**: Job title, skills, company names
+- **Location**: City, state, or "Remote"
+- **Experience Level**: Entry level, Associate, Mid-Senior, Director, Executive
+- **Easy Apply Only**: Filter for jobs with Easy Apply enabled
+- **Date Posted**: Last 24 hours, Past week, Past month
+
+## 🧠 AI Models
+
+### Local LLM (Ollama qwen2.5vl:7b)
+- **Vision Capabilities**: Analyzes page screenshots
+- **Fast Processing**: Local inference, no API costs
+- **Privacy**: All data stays local
+- **Fallback**: Graceful text-only mode if vision fails
+
+### Cloud LLM (Anthropic Claude)
+- **High Accuracy**: Advanced reasoning capabilities
+- **Vision Support**: Multi-modal analysis
+- **Recovery Mode**: Handles complex scenarios
+- **API Costs**: Pay per usage
+
+## 📁 Project Structure
 
 ```
 jobagent/
-├── agent/
-│   ├── controller.py         # Main loop for a single Easy Apply flow
-│   ├── search_controller.py  # Orchestrates job search and batch applications
-│   ├── profile_agent.py      # Reads user_profile.yaml and provides answers to screening questions
-│   ├── memory_manager.py     # Persists job application history and form mappings (optional)
-│   └── recovery_agent.py     # Uses a cloud model to recover from stalled UI states
-│
-├── browser/
-│   ├── playwright_driver.py  # Wraps Playwright interactions: load pages, click, fill, upload
-│   └── dom_utils.py          # Helpers for parsing and monitoring DOM changes
-│
-├── models/
-│   ├── local_llm.py          # Interface to the local language model (e.g. LLaMA via Ollama)
-│   └── cloud_llm.py          # Interface to a fallback cloud model (e.g. Claude or GPT‑4)
-│
-├── data/
-│   ├── user_profile.yaml     # Contains your personal info and default answers to screening questions
-│   └── linkedin_search.yaml  # Specifies job search presets (title, location, filters)
-│
-├── search/
-│   ├── linkedin_url_builder.py  # Builds LinkedIn search URLs from presets
-│   └── job_card_extractor.py    # Parses job cards from search results
-│
-├── scripts/
-│   ├── apply_once.py         # CLI entry point to apply to a single job URL
-│   └── apply_batch.py        # CLI entry point to search and apply to many jobs
-│
-├── langchain_agent.py       # Entry point for an optional LangChain‑based agent
-├── .env.example             # Example environment variables for configuring AI models
-└── requirements.txt         # Python dependencies
+├── agent/                  # Core automation logic
+│   ├── controller.py       # Main job application orchestrator
+│   ├── memory_manager.py   # Session state management
+│   ├── profile_agent.py    # Profile-specific logic
+│   └── recovery_agent.py   # Error recovery system
+├── browser/                # Browser automation
+│   ├── playwright_driver.py # Main browser interface
+│   └── dom_utils.py        # DOM manipulation utilities
+├── models/                 # AI model interfaces
+│   ├── local_llm.py        # Ollama integration
+│   └── cloud_llm.py        # Claude/GPT integration
+├── search/                 # LinkedIn search logic
+│   ├── job_card_extractor.py # Job listing parser
+│   └── linkedin_url_builder.py # Search URL generation
+├── data/                   # Configuration and profiles
+│   ├── user_profile.yaml   # User information
+│   └── linkedin_search.yaml # Search templates
+├── resumes/                # Resume files
+├── coverletters/           # Cover letter files
+├── scripts/                # Utility and test scripts
+├── linkedin_job_app.py     # Main GUI application
+├── test_system.py          # System verification
+└── requirements.txt        # Python dependencies
 ```
 
-## Getting Started
+## 🔧 Advanced Configuration
 
-1. **Install dependencies.** Install Python dependencies in your environment. You’ll need Python 3.10+ and Playwright. After cloning this repository, run:
+### Browser Settings
+```python
+# Headless mode (no visible browser)
+HEADLESS_MODE=true
 
+# Custom delays (seconds)
+MIN_DELAY_BETWEEN_APPS=5
+MAX_DELAY_BETWEEN_APPS=10
+
+# Screenshot settings
+SCREENSHOT_COMPRESSION=true
+```
+
+### AI Model Settings
+```python
+# Ollama configuration
+OLLAMA_HOST=http://localhost:11434
+OLLAMA_MODEL=qwen2.5vl:7b
+OLLAMA_TIMEOUT=60
+
+# Claude configuration  
+ANTHROPIC_API_KEY=your_key
+CLAUDE_MODEL=claude-3-haiku-20240307
+```
+
+### LinkedIn Automation
+```python
+# Application limits
+MAX_APPLICATIONS_PER_SESSION=50
+MAX_STEPS_PER_APPLICATION=10
+
+# Error handling
+MAX_RETRIES=3
+STALL_DETECTION_THRESHOLD=3
+```
+
+## 🛠️ Troubleshooting
+
+### Common Issues
+
+1. **Ollama Connection Failed**
+   ```bash
+   # Check if Ollama is running
+   curl http://localhost:11434/api/version
+   
+   # Start Ollama
+   ollama serve
+   ```
+
+2. **Playwright Browser Issues**
+   ```bash
+   # Reinstall browsers
+   playwright install
+   
+   # Check browser availability
+   playwright --version
+   ```
+
+3. **LinkedIn Login Required**
+   - The system expects you to be logged into LinkedIn
+   - Use non-headless mode to manually log in
+   - Consider using LinkedIn session cookies
+
+4. **API Rate Limits**
+   - Anthropic Claude has usage limits
+   - Implement delays between requests
+   - Monitor API usage in Anthropic console
+
+### Debug Mode
+
+Enable detailed logging:
+```python
+import logging
+logging.basicConfig(level=logging.DEBUG)
+```
+
+## 🔒 Privacy & Ethics
+
+### Data Handling
+- All profile data stored locally in YAML files
+- Screenshots processed locally (unless using cloud LLM)
+- No persistent storage of LinkedIn data
+- Browser sessions isolated and cleaned up
+
+### Ethical Use
+- **Respect LinkedIn's Terms of Service**
+- Use reasonable delays between applications
+- Don't spam employers with irrelevant applications
+- Ensure applications are high-quality and targeted
+
+### Rate Limiting
+- Built-in delays prevent overwhelming LinkedIn's servers
+- Configurable application limits per session
+- Automatic stall detection and recovery
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes and add tests
+4. Submit a pull request
+
+### Development Setup
 ```bash
-pip install -r requirements.txt
-python -m playwright install
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Run tests
+python -m pytest tests/
+
+# Format code
+black . && isort .
+
+# Type checking
+mypy jobagent/
 ```
 
-2. **Configure your profile.** Edit `data/user_profile.yaml` with your name, email, resume path and any default answers to common screening questions.
+## 📜 License
 
-3. **Set up search presets.** Edit `data/linkedin_search.yaml` to define what jobs you want to search for. For example you can specify job titles, locations, experience levels or whether to filter to remote roles.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
-4. **Run a single application.** Use `python scripts/apply_once.py --url <job_url>` to test the flow on one LinkedIn Easy Apply job. This will open a browser window, click the Easy Apply button, and step through the form using the local model.
+## ⚠️ Disclaimer
 
-5. **Run batch applications.** Use `python scripts/apply_batch.py` to search and apply to many jobs based on your presets. See the source code for details on how the batch script works.
+This tool is for educational and personal use only. Users are responsible for:
+- Complying with LinkedIn's Terms of Service
+- Ensuring applications are accurate and relevant
+- Respecting rate limits and automated access policies
+- Using the tool ethically and responsibly
 
-The provided Python files are mostly placeholders with docstrings and function definitions. You’ll need to implement the logic for parsing pages, calling models and executing actions. This scaffolding provides a structure to start building a fully automated job application agent.
+The authors are not responsible for any consequences of using this automation tool.
+
+## 🙏 Acknowledgments
+
+- [Ollama](https://ollama.ai/) for local LLM infrastructure
+- [Playwright](https://playwright.dev/) for browser automation
+- [Anthropic](https://anthropic.com/) for Claude API
+- [LinkedIn](https://linkedin.com/) for the Easy Apply platform
+
+---
+
+**Built with ❤️ for job seekers everywhere** 🚀
