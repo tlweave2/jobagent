@@ -128,37 +128,11 @@ class WebOrchestrator(JobApplicationOrchestrator):
             await self.broadcast_log("📋 Step 1: Searching for jobs...")
             await self.broadcast_status("Searching for jobs...")
             
-            # For demo purposes, generate some fake jobs
-            jobs = []
-            num_jobs = min(max_jobs if max_jobs > 0 else 20, 50)
+            jobs = await self.job_search_agent.search_jobs(search_term)
             
-            for i in range(num_jobs):
-                job = {
-                    'id': f'job_{i}',
-                    'title': f'{search_term} Position {i + 1}',
-                    'company': f'Company {chr(65 + (i % 26))}' + ('Corp' if i % 3 == 0 else 'Inc' if i % 3 == 1 else 'LLC'),
-                    'location': location or 'Remote',
-                    'url': f'https://linkedin.com/jobs/view/demo_{i}',
-                    'status': 'pending'
-                }
-                jobs.append(job)
-                
-                # Simulate gradual job discovery
-                if i % 3 == 0:
-                    await asyncio.sleep(0.2)
-            
-            # Try to get real jobs from search agent if available
-            try:
-                if self.job_search_agent:
-                    real_jobs = await self.job_search_agent.search_jobs(search_term)
-                    if real_jobs:
-                        jobs = real_jobs[:max_jobs] if max_jobs > 0 else real_jobs
-                        # Ensure jobs have IDs
-                        for i, job in enumerate(jobs):
-                            if 'id' not in job:
-                                job['id'] = f'job_{i}'
-            except Exception as e:
-                await self.broadcast_log(f"⚠️ Using demo jobs (search agent error: {e})", "info")
+            # Limit jobs if max_jobs is specified
+            if max_jobs > 0:
+                jobs = jobs[:max_jobs]
             
             if not jobs:
                 await self.broadcast_log("❌ No jobs found for search term", "error")
@@ -169,7 +143,8 @@ class WebOrchestrator(JobApplicationOrchestrator):
             
             # Broadcast each job found
             for i, job in enumerate(jobs):
-                job['id'] = f"job_{i}"  # Ensure each job has an ID
+                if 'id' not in job:
+                    job['id'] = f"job_{i}"  # Ensure each job has an ID
                 await self.broadcast_job_found(job)
                 await asyncio.sleep(0.1)  # Small delay for UI updates
             
@@ -242,30 +217,51 @@ class WebOrchestrator(JobApplicationOrchestrator):
         job['status'] = 'applying'
         await self.broadcast_job_update(job)
         
-        # Simulate successful application for demo
-        await asyncio.sleep(2)  # Simulate processing time
+        # Start overlord monitoring
+        monitoring_task = None
+        if self.overlord_agent:
+            monitoring_task = asyncio.create_task(
+                self.overlord_agent.monitor_application(job_url)
+            )
         
         try:
-            # For demo purposes, we'll simulate the application process
+            # Step 1: Navigate to job
             await self.broadcast_log("🧭 Navigating to job page...")
-            await asyncio.sleep(1)
+            nav_success = await self.navigation_agent.navigate_to_job(job_url)
             
+            if not nav_success:
+                await self.broadcast_log("❌ Failed to navigate to job", "error")
+                job['status'] = 'failed'
+                await self.broadcast_job_update(job)
+                await self.logger.log_application(job, "NAVIGATION_FAILED")
+                return
+            
+            # Step 2: Apply to job using form filling agent
             await self.broadcast_log("📝 Starting application process...")
-            await asyncio.sleep(2)
+            application_result = await self.form_filling_agent.apply_to_job(
+                navigation_agent=self.navigation_agent,
+                job_details=job
+            )
             
-            # Simulate success/failure (85% success rate)
-            import random
-            success = random.random() < 0.85
+            # Step 3: Handle any email verification if needed
+            if application_result.get('needs_email_verification') and self.settings.get('enableEmail', True):
+                await self.broadcast_log("📧 Handling email verification...")
+                verification_result = await self.email_agent.handle_verification()
+                if verification_result:
+                    await self.broadcast_log("✅ Email verification completed", "success")
+                else:
+                    await self.broadcast_log("⚠️ Email verification failed", "error")
             
-            if success:
+            # Log result
+            if application_result.get('success'):
                 await self.broadcast_log("✅ Application successful!", "success")
                 self.successful_applications += 1
                 job['status'] = 'success'
-                await self.logger.log_application(job, "SUCCESS", {"simulated": True})
+                await self.logger.log_application(job, "SUCCESS", application_result)
             else:
                 await self.broadcast_log("❌ Application failed", "error")
                 job['status'] = 'failed'
-                await self.logger.log_application(job, "FAILED", {"simulated": True})
+                await self.logger.log_application(job, "FAILED", application_result)
             
             self.total_applications += 1
             await self.broadcast_job_update(job)
@@ -275,6 +271,11 @@ class WebOrchestrator(JobApplicationOrchestrator):
             job['status'] = 'failed'
             await self.broadcast_job_update(job)
             await self.logger.log_application(job, "ERROR", {"error": str(e)})
+        
+        finally:
+            # Stop monitoring
+            if monitoring_task:
+                monitoring_task.cancel()
     
     async def pause(self):
         """Pause the job application process."""
