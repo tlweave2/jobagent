@@ -1,0 +1,13 @@
+# Example LinkedIn job search presets
+
+searches:
+  - title: "Software Engineer"
+    location: "United States"
+    easy_apply_only: true
+    remote_only: true
+    experience_levels:
+      - "Entry level"
+      - "Associate"
+    keywords:
+      - "python"
+      - "backend"

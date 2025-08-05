@@ -1,0 +1,29 @@
+# User profile configuration for job applications
+
+# Personal details used to pre‑fill forms
+full_name: Timothy Weaver
+email: tim@example.com
+phone: "+1-555-123-4567"
+location: "Phoenix, AZ"
+
+# Work authorisation and sponsorship
+visa_status: "Authorized to work in the U.S."
+visa_sponsorship: "No"
+
+# Paths to attachments
+resume_path: "./resumes/tim.pdf"
+cover_letter_path: "./coverletters/generic_cover.pdf"
+
+# Default answers to common screening questions
+default_answers:
+  - question: "Will you require visa sponsorship?"
+    answer: "No"
+  - question: "Are you authorized to work in the United States?"
+    answer: "Yes"
+  - question: "How many years of experience do you have with Python?"
+    answer: "4"
+
+# Links that might be requested in applications
+portfolio_links:
+  - "https://github.com/timweaver"
+  - "https://vidlyai.com"
