@@ -95,7 +95,13 @@ class JobApplicationOrchestrator:
         await self.form_filling_agent.initialize()
         
         # Email Agent
-        self.email_agent = EmailAgent()
+        email_config = {
+            'email': 'user@example.com',  # Will be loaded from vector DB
+            'password': 'app_password',   # Will be loaded from vector DB
+            'imap_server': 'imap.gmail.com',
+            'imap_port': 993
+        }
+        self.email_agent = EmailAgent(email_config)
         await self.email_agent.initialize()
         
         # Overlord Agent (monitors everything)
@@ -224,10 +230,43 @@ class JobApplicationOrchestrator:
         print("✅ System shutdown complete")
 
 async def main():
-    """Main entry point for the job application system."""
-    print("🤖 LinkedIn Job Auto-Applier v2.0")
-    print("AI-Driven Multi-Agent Job Application System")
+    """Main entry point - launches web interface by default."""
+    print("🤖 AutoApply AI - Intelligent Job Application System")
     print("=" * 60)
+    print("🌐 Starting web interface...")
+    
+    try:
+        # Try to start the web interface
+        from web_interface.web_server import AutoApplyWebServer
+        import webbrowser
+        
+        server = AutoApplyWebServer(host='localhost', port=8000)
+        
+        # Open browser after a short delay
+        def open_browser():
+            print("🌐 Opening web browser at http://localhost:8000")
+            webbrowser.open('http://localhost:8000')
+        
+        # Schedule browser opening after 2 seconds
+        import asyncio
+        asyncio.get_event_loop().call_later(2, open_browser)
+        
+        # Start the server
+        await server.start_server()
+        
+    except ImportError as e:
+        print(f"⚠️  Web interface not available: {e}")
+        print("🔄 Falling back to command line interface...")
+        await main_cli()
+    except Exception as e:
+        print(f"❌ Error starting web interface: {e}")
+        print("🔄 Falling back to command line interface...")
+        await main_cli()
+
+async def main_cli():
+    """Command line interface fallback."""
+    print("💻 Command Line Interface")
+    print("=" * 30)
     
     # Get search term from user
     search_term = input("\n🔍 Enter job search term: ").strip()

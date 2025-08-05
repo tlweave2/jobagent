@@ -10,8 +10,8 @@ import json
 import os
 from typing import Dict, Any, List
 from playwright.async_api import Page
-from langchain.llms import Ollama
-from langchain.chat_models import ChatAnthropic
+from langchain_community.llms import Ollama
+from langchain_community.chat_models import ChatAnthropic
 from langchain.schema import HumanMessage, SystemMessage
 
 class FormFillingAgent:
@@ -40,11 +40,15 @@ class FormFillingAgent:
         
         # Initialize Claude for complex reasoning
         try:
-            self.claude_llm = ChatAnthropic(
-                model="claude-3-sonnet-20240229",
-                anthropic_api_key=os.getenv("ANTHROPIC_API_KEY")
-            )
-            print("   ✅ Claude LLM connected")
+            api_key = os.getenv("ANTHROPIC_API_KEY", "placeholder_key")
+            if api_key and api_key != "placeholder_key":
+                self.claude_llm = ChatAnthropic(
+                    model="claude-3-sonnet-20240229",
+                    anthropic_api_key=api_key
+                )
+                print("   ✅ Claude LLM connected")
+            else:
+                print("   ⚠️  Claude LLM not configured (no API key)")
         except Exception as e:
             print(f"   ⚠️  Claude LLM not available: {e}")
         
